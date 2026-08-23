@@ -72,7 +72,7 @@
 		const state = { selfId: localStorage.getItem(storageKey('self-id')), contacts: JSON.parse(localStorage.getItem(storageKey('contacts')) || '[]'), active: null, connections: new Map(), peer: null, peerReady: null, presenceTimer: null, call: null, callStream: null, ringtoneTimer: null };
 		const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 		const $ = (selector) => document.querySelector(selector);
-		const save = () => { localStorage.setItem(storageKey('self-id'), state.selfId || ''); localStorage.setItem(storageKey('contacts'), JSON.stringify(state.contacts)); };
+		const save = () => { try { localStorage.setItem(storageKey('self-id'), state.selfId || ''); localStorage.setItem(storageKey('contacts'), JSON.stringify(state.contacts)); return true; } catch (error) { console.warn('Local message storage is full', error); showMessageAlert('File sent, but local storage is full. It may not be available after reload.'); return false; } };
 		const makeId = () => { const bytes = new Uint8Array(256); crypto.getRandomValues(bytes); return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join(''); };
 		const initials = (id) => id ? id.slice(0, 2).toUpperCase() : '??';
 		const formatTime = (timestamp) => { if (!timestamp || typeof timestamp !== 'number') return ''; const date = new Date(timestamp); const now = new Date(); const options = date.toDateString() === now.toDateString() ? { hour: 'numeric', minute: '2-digit' } : { month: 'short', day: 'numeric', ...(date.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' }) }; return new Intl.DateTimeFormat(undefined, options).format(date); };
